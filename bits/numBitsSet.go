@@ -1,6 +1,72 @@
 package bits
 
 /*
+BitwiseLSBCount return the number of 1's in the given integer.
+Description:
+	It AND's the LSB of the given number with 0x01 and increment the counter if
+	it is 1.
+*/
+func BitwiseLSBCount(x uint32) uint32 {
+	if x == 0 {
+		return 0
+	}
+
+	var cnt uint32
+	cnt = 0
+	for x != 0 {
+		if x&1 == 1 {
+			cnt++
+		}
+		x = x >> 1
+	}
+	return cnt
+}
+
+/*
+KerninghamBitCount returns the number of set bits in uin32 number
+Description:
+	x = x & x-1 always flips the rightmost set bit
+*/
+func KerninghamBitCount(x uint32) uint32 {
+	if x == 0 {
+		return 0
+	}
+	var cnt uint32
+	cnt = 0
+	for {
+		x &= x - 1
+		cnt++
+		if x == 0 {
+			break
+		}
+	}
+
+	return cnt
+}
+
+/*
+LookupTblBitCount returns the number of set bits using precomputed lookup table
+*/
+func LookupTblBitCount(x uint32) uint32 {
+	if x == 0 {
+		return 0
+	}
+
+	var cnt uint32
+	var lookUpTbl [256]uint8
+	cnt = 0
+	for i := 0; i < 256; i++ {
+		lookUpTbl[i] = (uint8(i) & 1) + lookUpTbl[uint8(i)/2]
+	}
+
+	for i := 0; i < 32 && x != 0; i++ {
+		cnt += uint32(lookUpTbl[uint8(x)&255])
+		x = x >> 8
+	}
+	return cnt
+}
+
+/*
 PopulationCount returns the number of bits set in a given unsigned integer
 
 Description:
